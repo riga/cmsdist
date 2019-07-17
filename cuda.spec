@@ -1,16 +1,20 @@
 ### RPM external cuda %{fullversion}
 
 %ifarch x86_64
-%define fullversion 10.1.105
+%define fullversion 10.1.168
 %define cudaversion %(echo %realversion | cut -d. -f 1,2)
-%define driversversion 418.39
+%define cudamajor %(echo %realversion | cut -d. -f 1)
+%define cudaminor %(echo %realversion | cut -d. -f 2)
+%define driversversion 418.67
 %define cudasoversion %{driversversion}
 %define nsightarch linux-desktop-glibc_2_11_3-x64
-%define nsightversion 2019.1
+%define nsightversion 2019.3
 %endif
 %ifarch aarch64
 %define fullversion 10.0.166
 %define cudaversion %(echo %realversion | cut -d. -f 1,2)
+%define cudamajor %(echo %realversion | cut -d. -f 1)
+%define cudaminor %(echo %realversion | cut -d. -f 2)
 %define driversversion 32.1.0
 %define cudasoversion 1.1
 %define nsightarch linux-v4l_l4t-glx-t210-a64
@@ -64,6 +68,7 @@ mkdir -p %{i}/bin
 mkdir -p %{i}/include
 mkdir -p %{i}/lib64
 mkdir -p %{i}/share
+mkdir -p %{i}/extras
 
 # package only the runtime static libraries
 mv %_builddir/build/cuda-toolkit/lib64/libcudart_static.a %{i}/lib64/
@@ -71,17 +76,21 @@ mv %_builddir/build/cuda-toolkit/lib64/libcudadevrt.a %{i}/lib64/
 rm -f %_builddir/build/cuda-toolkit/lib64/lib*.a
 
 # do not package dynamic libraries for which there are stubs
-rm -f %_builddir/build/cuda-toolkit/lib64/libcublas.so*
-rm -f %_builddir/build/cuda-toolkit/lib64/libcublasLt.so*
-rm -f %_builddir/build/cuda-toolkit/lib64/libcufft.so*
-rm -f %_builddir/build/cuda-toolkit/lib64/libcufftw.so*
-rm -f %_builddir/build/cuda-toolkit/lib64/libcurand.so*
-rm -f %_builddir/build/cuda-toolkit/lib64/libcusolver.so*
-rm -f %_builddir/build/cuda-toolkit/lib64/libcusparse.so*
-rm -f %_builddir/build/cuda-toolkit/lib64/libnpp*.so*
-rm -f %_builddir/build/cuda-toolkit/lib64/libnvgraph.so*
-rm -f %_builddir/build/cuda-toolkit/lib64/libnvjpeg.so*
-rm -f %_builddir/build/cuda-toolkit/lib64/libnvrtc.so*
+# TODO: disable for now as TF installation doesn't find libraries; why moved into stubs dir anyway?
+#rm -f %_builddir/build/cuda-toolkit/lib64/libcublas.so*
+#rm -f %_builddir/build/cuda-toolkit/lib64/libcublasLt.so*
+#rm -f %_builddir/build/cuda-toolkit/lib64/libcufft.so*
+#rm -f %_builddir/build/cuda-toolkit/lib64/libcufftw.so*
+#rm -f %_builddir/build/cuda-toolkit/lib64/libcurand.so*
+#rm -f %_builddir/build/cuda-toolkit/lib64/libcusolver.so*
+#rm -f %_builddir/build/cuda-toolkit/lib64/libcusparse.so*
+#rm -f %_builddir/build/cuda-toolkit/lib64/libnpp*.so*
+#rm -f %_builddir/build/cuda-toolkit/lib64/libnvgraph.so*
+#rm -f %_builddir/build/cuda-toolkit/lib64/libnvjpeg.so*
+#rm -f %_builddir/build/cuda-toolkit/lib64/libnvrtc.so*
+
+# proper version symlinks from lib.so.MAJOR.MINOR to lib.so.FULLVERSION
+( cd %_builddir/build/cuda-toolkit/lib64; for FILE in `ls *.so.%{fullversion}`; do ln -s ${FILE} $( echo ${FILE} | cut -d. -f 1,2,3,4, ); done )
 
 # package the other dynamic libraries and the stubs
 chmod a+x %_builddir/build/cuda-toolkit/lib64/*.so
@@ -129,6 +138,11 @@ chmod a+x %{i}/bin/cuda-gdb
 # package the binaries and tools
 mv %_builddir/build/cuda-toolkit/bin/* %{i}/bin/
 mv %_builddir/build/cuda-toolkit/nvvm %{i}/
+
+# package extras
+mv %_builddir/build/cuda-toolkit/extras/CUPTI %{i}/extras/
+mv %_builddir/build/cuda-toolkit/extras/Sanitizer %{i}/extras/
+mv %_builddir/build/cuda-toolkit/extras/Debugger %{i}/extras/
 
 # package the version file
 mv %_builddir/build/cuda-toolkit/version.txt %{i}/
