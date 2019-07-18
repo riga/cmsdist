@@ -89,8 +89,8 @@ rm -f %_builddir/build/cuda-toolkit/lib64/lib*.a
 #rm -f %_builddir/build/cuda-toolkit/lib64/libnvjpeg.so*
 #rm -f %_builddir/build/cuda-toolkit/lib64/libnvrtc.so*
 
-# proper version symlinks from lib.so.MAJOR.MINOR to lib.so.FULLVERSION
-( cd %_builddir/build/cuda-toolkit/lib64; for FILE in `ls *.so.%{fullversion}`; do ln -s ${FILE} $( echo ${FILE} | cut -d. -f 1,2,3,4, ); done )
+# adjust version symlinks
+( cd %_builddir/build/cuda-toolkit/lib64; for FILE in `ls *.so.%{cudamajor}`; do ln -s ${FILE} ${FILE}.%{cudaminor}; done )
 
 # package the other dynamic libraries and the stubs
 chmod a+x %_builddir/build/cuda-toolkit/lib64/*.so

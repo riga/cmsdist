@@ -1,4 +1,4 @@
-### RPM external bazel 0.19.2
+### RPM external bazel 0.25.2
 
 Source: https://github.com/bazelbuild/bazel/releases/download/%{realversion}/bazel-%{realversion}-dist.zip
 BuildRequires: java-env

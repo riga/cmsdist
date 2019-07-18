@@ -8,9 +8,14 @@
 #   and update eigen-toolfile.spec accordingly
 ############################################
 %define isslc6amd64 %(case %{cmsplatf} in (slc6_amd64_*) echo 1 ;; (*) echo 0 ;; esac)
-%define tag         185f77b7ad50087a2ae2d68459b95b66244002da
-%define branch      cms/v6612da89
-%define github_user cms-externals
+#%define tag         185f77b7ad50087a2ae2d68459b95b66244002da
+#%define branch      cms/v6612da89
+#%define github_user cms-externals
+
+# this commit refers to tag 1.14.0, of the original TF repo
+%define tag         5e2a91f65cfb23f996136b9201d9312c9c36b941
+%define branch      cms_patch
+%define github_user riga
 Source: git+https://github.com/%{github_user}/tensorflow.git?obj=%{branch}/%{tag}&export=tensorflow-%{realversion}&output=/tensorflow-%{realversion}-%{tag}.tgz
 
 %if "%{?build_type:set}" != "set"
@@ -54,22 +59,34 @@ export TF_NEED_ROCM=0
 export TEST_TMPDIR=%{_builddir}/build
 
 # variables required when TF_NEED_CUDA is 1
+# TF 1.13.1
+# export TF_NEED_TENSORRT=0
+# export TF_CUDA_COMPUTE_CAPABILITIES="6.1,7.0,7.5"
+# export TF_CUDA_CLANG=0
+# export GCC_HOST_COMPILER_PATH=`which gcc`
+# export TF_CUDA_VERSION=10.1
+# export CUDA_TOOLKIT_PATH=$CUDA_ROOT
+# export TF_CUDNN_VERSION=7
+# export CUDNN_INSTALL_PATH=$CUDA_TOOLKIT_PATH
+# export TF_NCCL_VERSION=""
+
+# TF 1.14.0
 export TF_NEED_TENSORRT=0
+export TF_CUDA_PATHS=$CUDA_ROOT
 export TF_CUDA_COMPUTE_CAPABILITIES="6.1,7.0,7.5"
 export TF_CUDA_CLANG=0
 export GCC_HOST_COMPILER_PATH=`which gcc`
-export TF_CUDA_VERSION=10.1
-export CUDA_TOOLKIT_PATH=$CUDA_ROOT
-export TF_CUDNN_VERSION=7
-export CUDNN_INSTALL_PATH=$CUDNN_ROOT
-export TF_NCCL_VERSION=""
 
 # temp directory
 rm -rf ../build
 
-# one interactive input can't be automated properly as an empty string is
-# required which is interpreted as missing when set via an env variable
-echo -e "\n" | ./configure
+# TF 1.13.1:
+# one interactive input (NCCL version) can't be automated properly as an empty
+# string is required which is interpreted as missing when set via an env variable
+# echo -e "\n" | ./configure
+
+# TF 1.14.0
+./configure
 
 BAZEL_OPTS=" --output_user_root %{_builddir}/build build --jobs %{compiling_processes} -s --verbose_failures"
 BAZEL_OPTS="${BAZEL_OPTS} -c %{build_type} --config=noaws --config=nogcp --config=nohdfs --config=noignite --config=nokafka --config=cuda"
@@ -79,8 +96,8 @@ esac
 BAZEL_OPTS="${BAZEL_OPTS} --cxxopt=${CXX_OPT_FLAGS} --linkopt=-L${PROTOBUF_ROOT}/lib"
 BAZEL_OPTS="${BAZEL_OPTS} --action_env=PATH --action_env=TMPDIR --action_env=LD_LIBRARY_PATH --action_env=%{python_env} --distinct_host_configuration=false"
 BAZEL_OPTS="${BAZEL_OPTS} --test_env=PATH --test_env=LD_LIBRARY_PATH"
-BAZEL_OPTS="${BAZEL_OPTS} --action_env TF_SYSTEM_LIBS=protobuf_archive"
-BAZEL_OPTS="${BAZEL_OPTS} --action_env PROTOBUF_ROOT=${PROTOBUF_ROOT} --cxxopt=-Ibazel-out/k8-%{build_type}/genfiles/external/protobuf_archive"
+BAZEL_OPTS="${BAZEL_OPTS} --action_env=TF_SYSTEM_LIBS=protobuf_archive"
+BAZEL_OPTS="${BAZEL_OPTS} --action_env=PROTOBUF_ROOT=${PROTOBUF_ROOT} --cxxopt=-Ibazel-out/k8-%{build_type}/genfiles/external/protobuf_archive"
 
 #Fix Eigen headers list
 echo "HEADERS = [" > protobuf.BUILD
