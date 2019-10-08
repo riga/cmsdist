@@ -1,7 +1,8 @@
 ### RPM external onnxruntime 0.5.0
-%define tag 2a8b02097514ca90ac7471054460dcdc47b69e1b
-%define branch cms/v%{realversion}
-%define github_user cms-externals
+
+%define tag 5b8f2a2055d8592998a0040ac0a6c4b2f2e482e1
+%define branch cms/v%{realversion}_pb3.9.1
+%define github_user riga
 Source: git+https://github.com/%{github_user}/%{n}.git?obj=%{branch}/%{tag}&export=%{n}-%{realversion}&submodules=1&output=/%{n}-%{realversion}.tgz
 
 BuildRequires: cmake ninja zlib python3
