@@ -2,7 +2,7 @@
 ## INITENV +PATH PYTHON27PATH %{i}/${PYTHON_LIB_SITE_PACKAGES}
 ## INITENV +PATH PYTHON3PATH %{i}/${PYTHON3_LIB_SITE_PACKAGES}
 Source: none
- 
+
 Requires: root curl python python3 xrootd llvm hdf5
 
 %define isslc7 %(case %{cmsplatf} in (slc7_amd64*) echo 1 ;; (*) echo 0 ;; esac)
@@ -21,7 +21,7 @@ Requires: py2-histogrammar
 Requires: py2-pandas
 Requires: py2-root_numpy
 Requires: py2-Bottleneck
-Requires: py2-downhill 
+Requires: py2-downhill
 Requires: py2-theanets
 Requires: py2-xgboost
 Requires: py2-llvmlite
@@ -105,7 +105,7 @@ Requires: py2-schema
 #Requires: py2-Jinja
 Requires: py2-python-dateutil
 Requires: py2-python-cjson
-Requires: py2-enum34 
+Requires: py2-enum34
 Requires: py2-functools32
 Requires: py2-mock
 Requires: py2-pbr

@@ -73,22 +73,22 @@ mv %_builddir/build/cuda-toolkit/lib64/libcudadevrt.a %{i}/lib64/
 rm -f %_builddir/build/cuda-toolkit/lib64/lib*.a
 
 # do not package dynamic libraries for which there are stubs
-rm -f %_builddir/build/cuda-toolkit/lib64/libcublas.so*
-rm -f %_builddir/build/cuda-toolkit/lib64/libcublasLt.so*
-rm -f %_builddir/build/cuda-toolkit/lib64/libcufft.so*
-rm -f %_builddir/build/cuda-toolkit/lib64/libcufftw.so*
-rm -f %_builddir/build/cuda-toolkit/lib64/libcurand.so*
-rm -f %_builddir/build/cuda-toolkit/lib64/libcusolver.so*
-rm -f %_builddir/build/cuda-toolkit/lib64/libcusolverMg.so*
-rm -f %_builddir/build/cuda-toolkit/lib64/libcusparse.so*
-rm -f %_builddir/build/cuda-toolkit/lib64/libnpp*.so*
-rm -f %_builddir/build/cuda-toolkit/lib64/libnvgraph.so*
-rm -f %_builddir/build/cuda-toolkit/lib64/libnvjpeg.so*
-rm -f %_builddir/build/cuda-toolkit/lib64/libnvrtc.so*
+# rm -f %_builddir/build/cuda-toolkit/lib64/libcublas.so*
+# rm -f %_builddir/build/cuda-toolkit/lib64/libcublasLt.so*
+# rm -f %_builddir/build/cuda-toolkit/lib64/libcufft.so*
+# rm -f %_builddir/build/cuda-toolkit/lib64/libcufftw.so*
+# rm -f %_builddir/build/cuda-toolkit/lib64/libcurand.so*
+# rm -f %_builddir/build/cuda-toolkit/lib64/libcusolver.so*
+# rm -f %_builddir/build/cuda-toolkit/lib64/libcusolverMg.so*
+# rm -f %_builddir/build/cuda-toolkit/lib64/libcusparse.so*
+# rm -f %_builddir/build/cuda-toolkit/lib64/libnpp*.so*
+# rm -f %_builddir/build/cuda-toolkit/lib64/libnvgraph.so*
+# rm -f %_builddir/build/cuda-toolkit/lib64/libnvjpeg.so*
+# rm -f %_builddir/build/cuda-toolkit/lib64/libnvrtc.so*
 
 # package the other dynamic libraries and the stubs
-chmod a+x %_builddir/build/cuda-toolkit/lib64/*.so
-chmod a+x %_builddir/build/cuda-toolkit/lib64/stubs/*.so
+chmod a+x %_builddir/build/cuda-toolkit/lib64/*.so*
+chmod a+x %_builddir/build/cuda-toolkit/lib64/stubs/*.so*
 mv %_builddir/build/cuda-toolkit/lib64/* %{i}/lib64/
 
 # package the includes
@@ -103,6 +103,11 @@ rm -f %_builddir/build/cuda-toolkit/bin/computeprof
 
 # leave out the CUDA samples
 rm -f %_builddir/build/cuda-toolkit/bin/cuda-install-samples-%{cudaversion}.sh
+
+# package the CUPTI extras
+mkdir -p %{i}/extras
+rm -rf %_builddir/build/cuda-toolkit/extras/CUPTI/samples
+mv %_builddir/build/cuda-toolkit/extras/CUPTI %{i}/extras/
 
 # package the Nsight Compute command line tool
 mkdir %{i}/NsightCompute
