@@ -8,6 +8,8 @@
 %define nsightarch linux-desktop-glibc_2_11_3-x64
 %define computeversion 2019.4.0
 %define systemsversion 2019.3.7.5
+%define cudnnVersion 7.6.3.30
+%define ncclVersion 2.4.8
 %endif
 %ifarch aarch64
 %define fullversion 10.0.326
@@ -20,6 +22,8 @@
 
 %ifarch x86_64
 Source0: https://developer.download.nvidia.com/compute/cuda/%{cudaversion}/Prod/local_installers/%{n}_%{realversion}_%{driversversion}_linux.run
+Source1: http://cmsrep.cern.ch/cmssw/downaload/cuda/cudnn-10.1-linux-x64-v%{cudnnVersion}.tgz
+Source2: http://cmsrep.cern.ch/cmssw/downaload/cuda/nccl_%{ncclVersion}-1+cuda10.1_x86_64.tgz
 %endif
 %ifarch aarch64
 Source0: https://patatrack.web.cern.ch/patatrack/files/cuda-repo-l4t-10-0-local-%{realversion}_1.0-1_arm64.deb
@@ -38,6 +42,8 @@ mkdir %_builddir/build %_builddir/tmp
 
 # extract and repackage the CUDA runtime, tools and stubs
 %ifarch x86_64
+tar -xzvf %{SOURCE1}
+tar -xzvf %{SOURCE2}
 /bin/sh %{SOURCE0} --silent --override --tmpdir %_builddir/tmp --extract=%_builddir/build
 # extracts:
 # %_builddir/build/EULA.txt
@@ -68,6 +74,8 @@ mkdir -p %{i}/lib64
 mkdir -p %{i}/share
 
 # package only the runtime static libraries
+mv %_builddir/build/cudnn-%{cudnnVersion}/lib64/* %{i}/lib64/
+mv %_builddir/build/nccl-%{ncclVersion}/lib/* %{i}/lib64/
 mv %_builddir/build/cuda-toolkit/lib64/libcudart_static.a %{i}/lib64/
 mv %_builddir/build/cuda-toolkit/lib64/libcudadevrt.a %{i}/lib64/
 rm -f %_builddir/build/cuda-toolkit/lib64/lib*.a
@@ -93,6 +101,8 @@ mv %_builddir/build/cuda-toolkit/lib64/* %{i}/lib64/
 
 # package the includes
 rm -f %_builddir/build/cuda-toolkit/include/sobol_direction_vectors.h
+mv %_builddir/build/cudnn-%{cudnnVersion}/include/* %{i}/include/
+mv %_builddir/build/nccl-%{ncclVersion}/include/* %{i}/include/
 mv %_builddir/build/cuda-toolkit/include/* %{i}/include/
 
 # leave out the Nsight and NVVP graphical tools

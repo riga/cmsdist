@@ -143,6 +143,30 @@ cat << \EOF_TOOLFILE >%{i}/etc/scram.d/cuda-nvjpeg.xml
   <lib name="nvjpeg"/>
 </tool>
 EOF_TOOLFILE
+
+cat << \EOF_TOOLFILE >%{i}/etc/scram.d/cudnn.xml
+<tool name="cudnn" version="@TOOL_VERSION@">
+  <info url="https://developer.nvidia.com/cudnn"/>
+  <lib name="cudnn"/>
+  <client>
+    <environment name="CUDNN_BASE" default="@TOOL_ROOT@"/>
+    <environment name="LIBDIR" default="$CUDNN_BASE/lib64"/>
+    <environment name="INCLUDE" default="$CUDNN_BASE/include"/>
+  </client>
+</tool>
+EOF_TOOLFILE
+
+cat << \EOF_TOOLFILE >%{i}/etc/scram.d/nccl.xml
+<tool name="nccl" version="@TOOL_VERSION@">
+  <info url="https://developer.nvidia.com/nccl"/>
+  <lib name="nccl"/>
+  <client>
+    <environment name="NCCL_BASE" default="@TOOL_ROOT@"/>
+    <environment name="LIBDIR" default="$NCCL_BASE/lib64"/>
+    <environment name="INCLUDE" default="$NCCL_BASE/include"/>
+  </client>
+</tool>
+EOF_TOOLFILE
 %endif
 
 cat << \EOF_TOOLFILE >%{i}/etc/scram.d/cuda-nvrtc.xml
