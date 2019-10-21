@@ -175,8 +175,6 @@ Requires: igprof-toolfile
 Requires: cuda-toolfile
 Requires: cub-toolfile
 Requires: cuda-api-wrappers-toolfile
-Requires: cudnn-toolfile
-Requires: nccl-toolfile
 Requires: openloops-toolfile
 %endif
 

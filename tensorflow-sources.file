@@ -10,7 +10,7 @@
 ############################################
 
 BuildRequires: bazel
-Requires: gcc protobuf java-env python cuda cudnn nccl libjpeg-turbo eigen nasm py2-numpy py2-enum34 py2-mock py2-wheel py2-keras-applications py2-keras-preprocessing py2-setuptools py2-future
+Requires: gcc protobuf java-env python cuda libjpeg-turbo eigen nasm py2-numpy py2-enum34 py2-mock py2-wheel py2-keras-applications py2-keras-preprocessing py2-setuptools py2-future
 
 %define tag         185f77b7ad50087a2ae2d68459b95b66244002da
 %define branch      cms/v6612da89
@@ -76,7 +76,8 @@ rm -rf ../build
 ./configure
 
 # define bazel options
-BAZEL_OPTS="--output_user_root ../build build -s --verbose_failures --config=opt --config=v2 --config=cuda --cxxopt=-D_GLIBCXX_USE_CXX11_ABI=0 %{makeprocesses}"
+# BAZEL_OPTS="--output_user_root ../build build -s --verbose_failures --config=opt --config=v2 --config=cuda --cxxopt=-D_GLIBCXX_USE_CXX11_ABI=0 %{makeprocesses}"
+BAZEL_OPTS="--output_user_root ../build build -s --verbose_failures --config=opt --config=v2 --config=cuda --cxxopt=-std=c++1z %{makeprocesses}"
 BAZEL_EXTRA_OPTS="--action_env=PYTHONPATH=$%{python_env} --action_env=LD_LIBRARY_PATH --distinct_host_configuration=false"
 
 # build tensorflow python targets
@@ -145,10 +146,17 @@ done
 # copy headers from downloaded dependencies
 copy_headers() {
     local origin="$PWD"
-    cd "$1"
-    for header_file in $(find $2 -name *.h)
+    local start_dir="$1"
+    local search_dir="$2"
+    local force="$3"
+    cd "$start_dir"
+    for header_file in $(find "$search_dir" -name *.h)
     do
         local header_dir="$incdir/$(dirname "$header_file")"
+        local header_name="$(basename "$header_file")"
+
+        [ -f "$header_dir/$header_name" ] && [ "$force" = 1 ] && continue
+
         mkdir -p "$header_dir"
         cp -p "$header_file" "$header_dir"
     done

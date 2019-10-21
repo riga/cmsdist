@@ -22,8 +22,8 @@
 
 %ifarch x86_64
 Source0: https://developer.download.nvidia.com/compute/cuda/%{cudaversion}/Prod/local_installers/%{n}_%{realversion}_%{driversversion}_linux.run
-Source1: http://cmsrep.cern.ch/cmssw/downaload/cuda/cudnn-10.1-linux-x64-v%{cudnnVersion}.tgz
-Source2: http://cmsrep.cern.ch/cmssw/downaload/cuda/nccl_%{ncclVersion}-1+cuda10.1_x86_64.tgz
+Source1: http://cmsrep.cern.ch/cmssw/download/cuda/cudnn-%{cudaversion}-linux-x64-v%{cudnnVersion}.tgz
+Source2: http://cmsrep.cern.ch/cmssw/download/cuda/nccl_%{ncclVersion}-1+cuda%{cudaversion}_x86_64.tgz
 %endif
 %ifarch aarch64
 Source0: https://patatrack.web.cern.ch/patatrack/files/cuda-repo-l4t-10-0-local-%{realversion}_1.0-1_arm64.deb
@@ -74,10 +74,10 @@ mkdir -p %{i}/lib64
 mkdir -p %{i}/share
 
 # package only the runtime static libraries
-mv %_builddir/build/cudnn-%{cudnnVersion}/lib64/* %{i}/lib64/
-mv %_builddir/build/nccl-%{ncclVersion}/lib/* %{i}/lib64/
 mv %_builddir/build/cuda-toolkit/lib64/libcudart_static.a %{i}/lib64/
 mv %_builddir/build/cuda-toolkit/lib64/libcudadevrt.a %{i}/lib64/
+mv %_builddir/cudnn-%{cudnnVersion}/lib64/* %{i}/lib64/
+mv %_builddir/nccl-%{ncclVersion}/lib/* %{i}/lib64/
 rm -f %_builddir/build/cuda-toolkit/lib64/lib*.a
 
 # do not package dynamic libraries for which there are stubs
@@ -101,9 +101,9 @@ mv %_builddir/build/cuda-toolkit/lib64/* %{i}/lib64/
 
 # package the includes
 rm -f %_builddir/build/cuda-toolkit/include/sobol_direction_vectors.h
-mv %_builddir/build/cudnn-%{cudnnVersion}/include/* %{i}/include/
-mv %_builddir/build/nccl-%{ncclVersion}/include/* %{i}/include/
 mv %_builddir/build/cuda-toolkit/include/* %{i}/include/
+mv %_builddir/cudnn-%{cudnnVersion}/include/* %{i}/include/
+mv %_builddir/nccl-%{ncclVersion}/include/* %{i}/include/
 
 # leave out the Nsight and NVVP graphical tools
 rm -f %_builddir/build/cuda-toolkit/bin/nsight
