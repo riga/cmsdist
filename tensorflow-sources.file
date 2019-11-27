@@ -9,7 +9,7 @@
 #   and update eigen-toolfile.spec accordingly
 ############################################
 
-BuildRequires: bazel
+BuildRequires: bazel git
 Requires: gcc protobuf java-env python cuda libjpeg-turbo eigen nasm py2-numpy py2-enum34 py2-mock py2-wheel py2-keras-applications py2-keras-preprocessing py2-setuptools py2-future
 
 %define tag         185f77b7ad50087a2ae2d68459b95b66244002da
